@@ -5,6 +5,9 @@
 
 using namespace std;
 
+
+// si este commit funciona, deberia mostrarse
+// commit subido arrastrando el archivo desde mi carpeta xd
 // Clase base
 class Publicacion {
 protected:
@@ -72,4 +75,6 @@ void ingresarLibro() {
         cout << "Datos invalidos" << endl;
         return;
     }
+
+
 
