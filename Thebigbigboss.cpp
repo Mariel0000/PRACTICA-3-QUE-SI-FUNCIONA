@@ -36,7 +36,24 @@ public:
     Libro(string t, string a, int anio, int numPaginas)
         : Publicacion(t, a, anio), numeroPaginas(numPaginas) {}
         
-        // FUBCipn
+// Clase derivada Revista
+class Revista : public Publicacion {
+    int numeroEdicion;
+public:
+    Revista(string t, string a, int anio, int edicion)
+        : Publicacion(t, a, anio), numeroEdicion(edicion) {}
+
+    void mostrarInformacion() const override {
+        Publicacion::mostrarInformacion();
+        cout << "Edicion: " << numeroEdicion << endl;
+    }
+
+    string tipo() const override { return "Revista"; }
+};
+
+// Vector dinámico de publicaciones
+vector<Publicacion*> publicaciones;
+
 void ingresarLibro() {
     string titulo, autor;
     int anio, paginas;
