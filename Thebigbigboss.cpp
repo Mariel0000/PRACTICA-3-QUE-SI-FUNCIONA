@@ -5,9 +5,6 @@
 
 using namespace std;
 
-
-// si este commit funciona, deberia mostrarse
-// commit subido arrastrando el archivo desde mi carpeta xd
 // Clase base
 class Publicacion {
 protected:
@@ -30,15 +27,30 @@ public:
         else
             cout << "Anio no valido (1500-2025)." << endl;
     }
-    
-    class Libro : public Publicacion {
-private:
-    int numeroPaginas;
 
+    virtual void mostrarInformacion() const {
+        cout << "Titulo: " << titulo << "\nAutor: " << autor << "\nAnio: " << anioPublicacion << endl;
+    }
+
+    virtual string tipo() const = 0;
+    virtual ~Publicacion() {}
+};
+
+// Clase derivada Libro
+class Libro : public Publicacion {
+    int numeroPaginas;
 public:
-    Libro(string t, string a, int anio, int numPaginas)
-        : Publicacion(t, a, anio), numeroPaginas(numPaginas) {}
-        
+    Libro(string t, string a, int anio, int paginas)
+        : Publicacion(t, a, anio), numeroPaginas(paginas) {}
+
+    void mostrarInformacion() const override {
+        Publicacion::mostrarInformacion();
+        cout << "Paginas: " << numeroPaginas << endl;
+    }
+
+    string tipo() const override { return "Libro"; }
+};
+
 // Clase derivada Revista
 class Revista : public Publicacion {
     int numeroEdicion;
@@ -57,6 +69,25 @@ public:
 // Vector dinámico de publicaciones
 vector<Publicacion*> publicaciones;
 
+// Utilidad para convertir a minúsculas
+string aMinusculas(string texto) {
+    transform(texto.begin(), texto.end(), texto.begin(), ::tolower);
+    return texto;
+}
+
+// Verifica si ya existe una publicación con mismo título y autor
+bool existeDuplicado(const string& titulo, const string& autor) {
+    string tMin = aMinusculas(titulo);
+    string aMin = aMinusculas(autor);
+    for (auto* pub : publicaciones) {
+        if (aMinusculas(pub->getTitulo()) == tMin &&
+            aMinusculas(pub->getAutor()) == aMin)
+            return true;
+    }
+    return false;
+}
+
+// Funciones del sistema
 void ingresarLibro() {
     string titulo, autor;
     int anio, paginas;
@@ -76,5 +107,40 @@ void ingresarLibro() {
         return;
     }
 
+    if (existeDuplicado(titulo, autor)) {
+        cout << "Ya eXiste esa publicacion" << endl;
+        return;
+    }
 
+    publicaciones.push_back(new Libro(titulo, autor, anio, paginas));
+    cout << "Libro agregado." << endl;
+}
+
+void ingresarRevista() {
+    string titulo, autor;
+    int anio, edicion;
+
+    cin.ignore();
+    cout << "Tuitulo: ";
+    getline(cin, titulo);
+    cout << "Autor: ";
+    getline(cin, autor);
+    cout << "Anioo: ";
+    cin >> anio;
+    cout << "Edicion: ";
+    cin >> edicion;
+
+    if (titulo.empty() || autor.empty() || edicion <= 0 || anio < 1500 || anio > 2025) {
+        cout << "Datos invalidos." << endl;
+        return;
+    }
+
+    if (existeDuplicado(titulo, autor)) {
+        cout << "Ya existe esa publicacion." << endl;
+        return;
+    }
+
+    publicaciones.push_back(new Revista(titulo, autor, anio, edicion));
+    cout << "Revista agregada." << endl;
+}
 
