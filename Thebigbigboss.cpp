@@ -182,4 +182,58 @@ void ingresarRevista() {
 
     publicaciones.push_back(new Revista(titulo, autor, anio, ed));
     cout << "Revista agregada." << endl;
+}void ingresarPeriodico() {
+    string titulo, autor, ciudad, fecha;
+    int anio;
+
+    cin.ignore();
+    cout << "Titulo: "; getline(cin, titulo);
+    cout << "Autor: "; getline(cin, autor);
+    cout << "Anio: "; cin >> anio;
+    cin.ignore();
+    cout << "Fecha (DD/MM/AAAA): "; getline(cin, fecha);
+    cout << "Ciudad: "; getline(cin, ciudad);
+
+    if (titulo.empty() || autor.empty() || ciudad.empty() || fecha.empty() || anio < 1500 || anio > 2025) {
+        cout << "Datos invalidos." << endl;
+        return;
+    }
+
+    if (existeDuplicado(titulo, autor)) {
+        cout << "Ya existe esta publicacion." << endl;
+        return;
+    }
+
+    publicaciones.push_back(new Periodico(titulo, autor, anio, fecha, ciudad));
+    cout << "Periodico agregado." << endl;
+}
+
+void agregarPublicacion() {
+    int tipo;
+    do {
+        cout << "\n--- Seleccione el tipo de publicacion ---" << endl;
+        cout << "1. Libro\n2. Revista\n3. Periodico\n4. Volver al menu principal" << endl;
+        cout << "Seleccione el tipo (1-4): ";
+        cin >> tipo;
+
+        switch (tipo) {
+            case 1: ingresarLibro(); break;
+            case 2: ingresarRevista(); break;
+            case 3: ingresarPeriodico(); break;
+            case 4: break;
+            default: cout << "Opcion invalida." << endl;
+        }
+    } while (tipo != 4);
+}
+
+void mostrarPublicaciones() {
+    if (publicaciones.empty()) {
+        cout << "No hay publicaciones registradas." << endl;
+        return;
+    }
+
+    for (size_t i = 0; i < publicaciones.size(); ++i) {
+        cout << "\nPublicacion #" << i + 1 << " (" << publicaciones[i]->tipo() << "):" << endl;
+        publicaciones[i]->mostrarInformacion();
+    }
 }
