@@ -236,4 +236,120 @@ void mostrarPublicaciones() {
         cout << "\nPublicacion #" << i + 1 << " (" << publicaciones[i]->tipo() << "):" << endl;
         publicaciones[i]->mostrarInformacion();
     }
+}void buscarPorTitulo() {
+    string consulta;
+    cin.ignore();
+    cout << "Ingrese el titulo a buscar: ";
+    getline(cin, consulta);
+
+    string consultaMin = aMinusculas(consulta);
+    bool encontrado = false;
+
+    for (auto* pub : publicaciones) {
+        string tituloMin = aMinusculas(pub->getTitulo());
+        if (tituloMin.find(consultaMin) != string::npos) {
+            pub->mostrarInformacion();
+            cout << "------------------------" << endl;
+            encontrado = true;
+        }
+    }
+
+    if (!encontrado)
+        cout << "No se encontraron coincidencias." << endl;
 }
+
+void eliminarPublicacion() {
+    if (publicaciones.empty()) {
+        cout << "No hay publicaciones para eliminar." << endl;
+        return;
+    }
+
+    mostrarPublicaciones();
+    int i;
+    cout << "Ingrese el numero de publicacion a eliminar (1-" << publicaciones.size() << "): ";
+    cin >> i;
+
+    if (i >= 1 && i <= (int)publicaciones.size()) {
+        cout << "¿Seguro que desea eliminar esta publicacion? (s/n): ";
+        char respuesta;
+        cin >> respuesta;
+        if (respuesta == 's' || respuesta == 'S') {
+            delete publicaciones[i - 1];
+            publicaciones.erase(publicaciones.begin() + i - 1);
+            cout << "Publicacion eliminada." << endl;
+        } else {
+            cout << "Eliminacion cancelada." << endl;
+        }
+    } else {
+        cout << "Indice invalido." << endl;
+    }
+}
+
+void mostrarEstadisticas() {
+    int libros = 0, revistas = 0, periodicos = 0;
+    int masAntigua = 9999, masReciente = 0;
+
+    for (auto* pub : publicaciones) {
+        string tipo = pub->tipo();
+        if (tipo == "Libro") libros++;
+        else if (tipo == "Revista") revistas++;
+        else if (tipo == "Periodico") periodicos++;
+
+        int anio = pub->getAnio();
+        if (anio < masAntigua) masAntigua = anio;
+        if (anio > masReciente) masReciente = anio;
+    }
+
+    cout << "\nESTADISTICAS DEL CATALOGO" << endl;
+    cout << "-------------------------" << endl;
+    cout << "Total de publicaciones: " << publicaciones.size() << endl;
+    cout << "Cantidad de Libros:     " << libros << endl;
+    cout << "Cantidad de Revistas:   " << revistas << endl;
+    cout << "Cantidad de Periodicos: " << periodicos << endl;
+
+    if (!publicaciones.empty()) {
+        cout << "Publicacion mas antigua:  " << masAntigua << endl;
+        cout << "Publicacion mas reciente: " << masReciente << endl;
+    }
+}
+
+        
+        
+        int main() {
+    int opcion;
+    do {
+        cout << "\n======= MENU DE GESTIÓN DE PUBLICACIONES =======" << endl;
+        cout << "1. Agregar nueva publicacion" << endl;
+        cout << "2. Mostrar todas las publicaciones" << endl;
+        cout << "3. Buscar publicaciones por titulos" << endl;
+        cout << "4. Eliminar publicacion" << endl;
+        cout << "5. Mostrar estadisticas" << endl;
+        cout << "6. Salir del programa" << endl;
+        cout << "Seleccione una opcion (1-6): ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: agregarPublicacion(); break;
+            case 2: mostrarPublicaciones(); break;
+            case 3: buscarPorTitulo(); break;
+            case 4: eliminarPublicacion(); break;
+            case 5: mostrarEstadisticas(); break;
+            case 6:
+                char salir;
+                cout << "¿Seguro que desea salir del programa? (s/n): ";
+                cin >> salir;
+                if (salir == 's' || salir == 'S') {
+                    for (auto* p : publicaciones)
+                        delete p;
+                    publicaciones.clear();
+                    cout << "Programa finalizado." << endl;
+                    return 0;
+                }
+                break;
+            default:
+                cout << "Opción inválida. Intente nuevamente." << endl;
+        }
+    } while (true);
+}
+
+        
