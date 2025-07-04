@@ -318,7 +318,7 @@ void mostrarEstadisticas() {
         int main() {
     int opcion;
     do {
-        cout << "\n======= MENU DE GESTIÓN DE PUBLICACIONES =======" << endl;
+        cout << "\n======= MENU DE GESTION DE PUBLICACIONES =======" << endl;
         cout << "1. Agregar nueva publicacion" << endl;
         cout << "2. Mostrar todas las publicaciones" << endl;
         cout << "3. Buscar publicaciones por titulos" << endl;
