@@ -5,27 +5,42 @@
 
 using namespace std;
 
-// Clase base
+
+// si este commit funciona, deberia mostrarse
+// commit subido arrastrando el archivo desde mi carpeta xd
+
+
+using namespace std;
+
 class Publicacion {
-protected:
+private:
     string titulo;
     string autor;
     int anioPublicacion;
 
 public:
-    Publicacion(string t, string a, int anio) : titulo(t), autor(a) {
+    Publicacion(string t, string a, int anio) {
+        setTitulo(t);
+        setAutor(a);
         setAnioPublicacion(anio);
     }
+
+    virtual ~Publicacion() {}
 
     string getTitulo() const { return titulo; }
     string getAutor() const { return autor; }
     int getAnio() const { return anioPublicacion; }
 
-    void setAnioPublicacion(int nuevoAnio) {
-        if (nuevoAnio >= 1500 && nuevoAnio <= 2025)
-            anioPublicacion = nuevoAnio;
-        else
-            cout << "Anio no valido (1500-2025)." << endl;
+    void setTitulo(const string& t) {
+        if (!t.empty()) titulo = t;
+    }
+
+    void setAutor(const string& a) {
+        if (!a.empty()) autor = a;
+    }
+
+    void setAnioPublicacion(int a) {
+        if (a >= 1500 && a <= 2025) anioPublicacion = a;
     }
 
     virtual void mostrarInformacion() const {
@@ -33,30 +48,41 @@ public:
     }
 
     virtual string tipo() const = 0;
-    virtual ~Publicacion() {}
 };
 
-// Clase derivada Libro
 class Libro : public Publicacion {
-    int numeroPaginas;
+private:
+    int numPaginas;
+
 public:
-    Libro(string t, string a, int anio, int paginas)
-        : Publicacion(t, a, anio), numeroPaginas(paginas) {}
+    Libro(string t, string a, int anio, int p) : Publicacion(t, a, anio) {
+        setPaginas(p);
+    }
+
+    void setPaginas(int p) {
+        if (p > 0) numPaginas = p;
+    }
 
     void mostrarInformacion() const override {
         Publicacion::mostrarInformacion();
-        cout << "Paginas: " << numeroPaginas << endl;
+        cout << "Paginas: " << numPaginas << endl;
     }
 
     string tipo() const override { return "Libro"; }
 };
 
-// Clase derivada Revista
 class Revista : public Publicacion {
+private:
     int numeroEdicion;
+
 public:
-    Revista(string t, string a, int anio, int edicion)
-        : Publicacion(t, a, anio), numeroEdicion(edicion) {}
+    Revista(string t, string a, int anio, int ed) : Publicacion(t, a, anio) {
+        setEdicion(ed);
+    }
+
+    void setEdicion(int ed) {
+        if (ed > 0) numeroEdicion = ed;
+    }
 
     void mostrarInformacion() const override {
         Publicacion::mostrarInformacion();
@@ -66,49 +92,67 @@ public:
     string tipo() const override { return "Revista"; }
 };
 
-// Vector dinámico de publicaciones
+class Periodico : public Publicacion {
+private:
+    string fechaPublicacion;
+    string ciudad;
+
+public:
+    Periodico(string t, string a, int anio, string f, string c) : Publicacion(t, a, anio) {
+        setFecha(f);
+        setCiudad(c);
+    }
+
+    void setFecha(const string& f) {
+        if (!f.empty()) fechaPublicacion = f;
+    }
+
+    void setCiudad(const string& c) {
+        if (!c.empty()) ciudad = c;
+    }
+
+    void mostrarInformacion() const override {
+        Publicacion::mostrarInformacion();
+        cout << "Fecha de publicacion: " << fechaPublicacion << endl;
+        cout << "Ciudad: " << ciudad << endl;
+    }
+
+    string tipo() const override { return "Periodico"; }
+};
+
 vector<Publicacion*> publicaciones;
 
-// Utilidad para convertir a minúsculas
 string aMinusculas(string texto) {
     transform(texto.begin(), texto.end(), texto.begin(), ::tolower);
     return texto;
 }
 
-// Verifica si ya existe una publicación con mismo título y autor
 bool existeDuplicado(const string& titulo, const string& autor) {
-    string tMin = aMinusculas(titulo);
-    string aMin = aMinusculas(autor);
-    for (auto* pub : publicaciones) {
-        if (aMinusculas(pub->getTitulo()) == tMin &&
-            aMinusculas(pub->getAutor()) == aMin)
+    string t = aMinusculas(titulo);
+    string a = aMinusculas(autor);
+    for (auto* p : publicaciones)
+        if (aMinusculas(p->getTitulo()) == t && aMinusculas(p->getAutor()) == a)
             return true;
-    }
     return false;
 }
 
-// Funciones del sistema
 void ingresarLibro() {
     string titulo, autor;
     int anio, paginas;
 
     cin.ignore();
-    cout << "TItulo: ";
-    getline(cin, titulo);
-    cout << "Autor: ";
-    getline(cin, autor);
-    cout << "Aio: ";
-    cin >> anio;
-    cout << "Paginas: ";
-    cin >> paginas;
+    cout << "Titulo: "; getline(cin, titulo);
+    cout << "Autor: "; getline(cin, autor);
+    cout << "Anio: "; cin >> anio;
+    cout << "Paginas: "; cin >> paginas;
 
     if (titulo.empty() || autor.empty() || paginas <= 0 || anio < 1500 || anio > 2025) {
-        cout << "Datos invalidos" << endl;
+        cout << "Datos invalidos." << endl;
         return;
     }
 
     if (existeDuplicado(titulo, autor)) {
-        cout << "Ya eXiste esa publicacion" << endl;
+        cout << "Ya existe esta publicacion." << endl;
         return;
     }
 
@@ -118,29 +162,24 @@ void ingresarLibro() {
 
 void ingresarRevista() {
     string titulo, autor;
-    int anio, edicion;
+    int anio, ed;
 
     cin.ignore();
-    cout << "Tuitulo: ";
-    getline(cin, titulo);
-    cout << "Autor: ";
-    getline(cin, autor);
-    cout << "Anioo: ";
-    cin >> anio;
-    cout << "Edicion: ";
-    cin >> edicion;
+    cout << "Titulo: "; getline(cin, titulo);
+    cout << "Autor: "; getline(cin, autor);
+    cout << "Anio: "; cin >> anio;
+    cout << "Edicion: "; cin >> ed;
 
-    if (titulo.empty() || autor.empty() || edicion <= 0 || anio < 1500 || anio > 2025) {
+    if (titulo.empty() || autor.empty() || ed <= 0 || anio < 1500 || anio > 2025) {
         cout << "Datos invalidos." << endl;
         return;
     }
 
     if (existeDuplicado(titulo, autor)) {
-        cout << "Ya existe esa publicacion." << endl;
+        cout << "Ya existe esta publicacion." << endl;
         return;
     }
 
-    publicaciones.push_back(new Revista(titulo, autor, anio, edicion));
+    publicaciones.push_back(new Revista(titulo, autor, anio, ed));
     cout << "Revista agregada." << endl;
 }
-
